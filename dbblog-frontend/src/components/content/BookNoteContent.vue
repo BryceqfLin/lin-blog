@@ -68,13 +68,13 @@ export default {
         method: 'get'
       }).then(({data}) => {
         if (data && data.code === 200) {
-          this.bookNote = data.bookNote
+          this.bookNote = data.data
           // 更新目录、高亮代码
           this.$nextTick(function () {
             this.addCodeLineNumber()
             this.refreshDiectory()
             this.refreshMobileDirectory()
-            document.title = this.bookNote.title + ' | Bobbi的个人博客 | 一个努力成长中的Java后端程序猿'
+            document.title = this.bookNote.title + ' | 你知道的越多，你不知道的越多 | Bryce'
           })
         }
       })

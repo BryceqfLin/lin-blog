@@ -10,8 +10,8 @@
       <div id="header"  v-show="show">
     <router-link id="logo" to="/">
       <img src="../../../assets/logo.png">
-      <span class="title">Lynn's Blog</span>
-      <span class="motto">success belongs to the persevering</span>
+      <span class="title">一叶知秋</span>
+      <span class="motto">成功属于坚持不懈的人</span>
     </router-link>
     <ul id="nav">
       <li>
