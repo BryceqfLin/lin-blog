@@ -7,16 +7,47 @@
         id, link_id, type, order_num, title, top
     </sql>
 
-    <select id="listSelect" resultType="cn.dblearn.blog.entity.operation.vo.RecommendVO">
+    <select id="listSelect" resultType="cn.dblearn.blog.entity.operation.vo.RecommendVO" parameterType="map">
+        select id as linkId, title, #{type} as type
+        from
+        <if test="type == 0">
+            article
+        </if>
+        <if test="type == 1">
+            book
+        </if>
+        <if test="type == 2">
+            book_note
+        </if>
+        <if test="name != null and name != ''">
+            where title like CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+    <select id="listSelectAll" resultType="cn.dblearn.blog.entity.operation.vo.RecommendVO" parameterType="map">
         select a.id as linkId, a.title, 0 as type
         from article a
+        <if test="name != null and name != ''">
+            where a.title like CONCAT('%',#{name},'%')
+        </if>
         union all
-        select b.id as linkId, b.title, 2 as type
-        from book_note b
+        select b.id as linkId, b.title, 1 as type
+        from book b
+        <if test="name != null and name != ''">
+            where b.title like CONCAT('%',#{name},'%')
+        </if>
+        union all
+        select bn.id as linkId, bn.title, 2 as type
+        from book_note bn
+        <if test="name != null and name != ''">
+            where bn.title like CONCAT('%',#{name},'%')
+        </if>
     </select>
 
     <select id="listRecommendVo" resultType="cn.dblearn.blog.entity.operation.vo.RecommendVO">
-        select <include refid="Base_Column_List"/> from recommend order by top desc,id desc  limit 5
+        select
+        <include refid="Base_Column_List"/>
+        from recommend order by top desc,id desc limit 5
     </select>
 
     <select id="listHotRead" resultType="cn.dblearn.blog.entity.operation.vo.RecommendVO">

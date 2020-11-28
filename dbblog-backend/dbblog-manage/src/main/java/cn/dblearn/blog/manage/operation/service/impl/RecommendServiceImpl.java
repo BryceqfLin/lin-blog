@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,15 +31,16 @@ public class RecommendServiceImpl extends ServiceImpl<RecommendMapper, Recommend
 
     /**
      * 分页查询
+     *
      * @param params
      * @return
      */
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         String title = (String) params.get("title");
-        IPage<Recommend> page=baseMapper.selectPage(new Query<Recommend>(params).getPage(),
+        IPage<Recommend> page = baseMapper.selectPage(new Query<Recommend>(params).getPage(),
                 new QueryWrapper<Recommend>().lambda()
-                        .like(StringUtils.isNotEmpty(title),Recommend::getTitle,title));
+                        .like(StringUtils.isNotEmpty(title), Recommend::getTitle, title));
         return new PageUtils(page);
     }
 
@@ -48,8 +50,12 @@ public class RecommendServiceImpl extends ServiceImpl<RecommendMapper, Recommend
      * @return
      */
     @Override
-    public List<RecommendVO> listSelect() {
-        return baseMapper.listSelect();
+    public List<RecommendVO> listSelect(String type, String name) {
+        if (StringUtils.isEmpty(type)) {
+            return baseMapper.listSelectAll(name);
+        } else {
+            return baseMapper.listSelect(type, name);
+        }
     }
 
     /**
@@ -67,8 +73,8 @@ public class RecommendServiceImpl extends ServiceImpl<RecommendMapper, Recommend
         //批量更新其他
         recommend.setTop(false);
         recommend.setId(null);
-        this.baseMapper.update(recommend,new QueryWrapper<Recommend>().lambda()
-                .ne(Recommend::getId,id));
+        this.baseMapper.update(recommend, new QueryWrapper<Recommend>().lambda()
+                .ne(Recommend::getId, id));
     }
 
     /**
@@ -82,8 +88,8 @@ public class RecommendServiceImpl extends ServiceImpl<RecommendMapper, Recommend
         for (int i = 0; i < linkIds.length; i++) {
             int linkId = linkIds[i];
             baseMapper.delete(new QueryWrapper<Recommend>().lambda()
-                    .eq(Recommend::getLinkId,linkId)
-                    .eq(Recommend::getType,type));
+                    .eq(Recommend::getLinkId, linkId)
+                    .eq(Recommend::getType, type));
         }
     }
 

@@ -29,7 +29,7 @@ public interface RecommendService extends IService<Recommend> {
      * 获取推荐列表
      * @return
      */
-    List<RecommendVO> listSelect();
+    List<RecommendVO> listSelect(String type,String name);
 
     /**
      * 更新置顶状态

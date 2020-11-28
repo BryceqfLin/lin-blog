@@ -10,6 +10,7 @@ import cn.dblearn.blog.entity.operation.vo.RecommendVO;
 import cn.dblearn.blog.manage.operation.service.RecommendService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -39,7 +40,7 @@ public class RecommendController extends AbstractController {
     @ApiOperation(value = "【分页获取推荐列表】")
     @GetMapping("/list")
     @RequiresPermissions("operation:recommend:list")
-    public Result list(@RequestParam Map<String, Object> params){
+    public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = recommendService.queryPage(params);
 
         return Result.sysSuccess(page);
@@ -48,16 +49,17 @@ public class RecommendController extends AbstractController {
     @ApiOperation(value = "【获取所有推荐列表】")
     @GetMapping("/select")
     @RequiresPermissions("operation:recommend:list")
-    public Result select () {
-        List<RecommendVO> recommendList = recommendService.listSelect();
+    public Result select(@ApiParam(value = "推荐类型") @RequestParam(required = false) String type,
+                         @ApiParam(value = "文章标题") @RequestParam(required = false) String name) {
+        List<RecommendVO> recommendList = recommendService.listSelect(type,name);
         return Result.sysSuccess(recommendList);
     }
 
     @ApiOperation(value = "【推荐详情】")
     @GetMapping("/info/{id}")
     @RequiresPermissions("operation:recommend:info")
-    public Result info(@PathVariable("id") String id){
-       Recommend recommend = recommendService.getById(id);
+    public Result info(@PathVariable("id") String id) {
+        Recommend recommend = recommendService.getById(id);
 
         return Result.sysSuccess(recommend);
     }
@@ -66,7 +68,7 @@ public class RecommendController extends AbstractController {
     @PostMapping("/save")
     @RequiresPermissions("operation:recommend:save")
     @CacheEvict(allEntries = true)
-    public Result save(@RequestBody Recommend recommend){
+    public Result save(@RequestBody Recommend recommend) {
         ValidatorUtils.validateEntity(recommend);
         recommendService.save(recommend);
 
@@ -77,7 +79,7 @@ public class RecommendController extends AbstractController {
     @PutMapping("/update")
     @RequiresPermissions("operation:recommend:update")
     @CacheEvict(allEntries = true)
-    public Result update(@RequestBody Recommend recommend){
+    public Result update(@RequestBody Recommend recommend) {
         ValidatorUtils.validateEntity(recommend);
         recommendService.updateById(recommend);
         return Result.sysSuccess();
@@ -87,7 +89,7 @@ public class RecommendController extends AbstractController {
     @PutMapping("/top/{id}")
     @RequiresPermissions("operation:recommend:update")
     @CacheEvict(allEntries = true)
-    public Result updateTop (@PathVariable Integer id) {
+    public Result updateTop(@PathVariable Integer id) {
         recommendService.updateTop(id);
         return Result.sysSuccess();
     }
@@ -96,7 +98,7 @@ public class RecommendController extends AbstractController {
     @DeleteMapping("/delete")
     @RequiresPermissions("operation:recommend:delete")
     @CacheEvict(allEntries = true)
-    public Result delete(@RequestBody String[] ids){
+    public Result delete(@RequestBody String[] ids) {
         recommendService.removeByIds(Arrays.asList(ids));
 
         return Result.sysSuccess();
